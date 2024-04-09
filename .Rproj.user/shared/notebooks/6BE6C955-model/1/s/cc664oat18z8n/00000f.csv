@@ -1,0 +1,29 @@
+"0","cat(paste(""R^2:"", summary(model)$r.squared, ""\n""))"
+"1","R^2: 0.855536875953761 
+"
+"0","cat(paste(""Intercept:"", coef(model)[1], ""\n""))"
+"1","Intercept: 2169.2697209394 
+"
+"0","cat(""Columns:"", colnames(X), ""\n"")"
+"1","Columns:"
+"1"," "
+"1","bill_length_mm"
+"1"," "
+"1","species"
+"1"," "
+"1","sex"
+"1"," "
+"1","
+"
+"0","cat(paste(""Coefficients:"", coef(model)[-1], ""\n""))"
+"1","Coefficients: 32.5368867712031 
+"
+"1"," "
+"1","Coefficients: -298.765534465279 
+"
+"1"," "
+"1","Coefficients: 1094.86739144898 
+"
+"1"," "
+"1","Coefficients: 547.36692407721 
+"

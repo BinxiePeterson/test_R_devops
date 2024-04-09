@@ -1,0 +1,58 @@
+---
+title: "Model"
+format:
+  html:
+    code-fold: true
+---
+
+# Load necessary libraries
+```{r}
+library(palmerpenguins)
+library(dplyr)
+library(tidyr)
+```
+
+# Get data
+
+```{r}
+library(duckdb)
+library(dbplyr)
+
+# Make a persistent DB and store the connection in a variable.
+con <- DBI::dbConnect(
+  duckdb::duckdb(),
+  dbdir = "my-db.duckdb"
+  )
+
+# Write an R dataframe (penguins) into a DuckDB table. 
+DBI::dbWriteTable(conn = con,
+                  name = "penguins",
+                  value = palmerpenguins::penguins,
+                  overwrite = TRUE)
+
+# Query the data in the database.
+df <- dplyr::tbl(con, "penguins") %>% dplyr::collect()
+
+# Disconnect from the database.
+DBI::dbDisconnect(con, shutdown = TRUE)
+```
+
+# Define model and fit
+
+```{r}
+X <- df %>% 
+  select(bill_length_mm, species, sex)
+
+y <- df$body_mass_g
+
+model <- lm(y ~ ., data = X)
+```
+
+# Get some information
+
+```{r}
+cat(paste("R^2:", summary(model)$r.squared, "\n"))
+cat(paste("Intercept:", coef(model)[1], "\n"))
+cat("Columns:", colnames(X), "\n")
+cat(paste("Coefficients:", coef(model)[-1], "\n"))
+```
