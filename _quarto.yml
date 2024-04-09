@@ -13,6 +13,7 @@ website:
         href: eda.qmd
       - text: Model
         href: model.qmd
+  site-url: https://binxiepeterson.github.io/test_R_devops/
 
 format:
   html:
