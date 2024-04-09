@@ -1,0 +1,30 @@
+[
+  {
+    "objectID": "eda.html",
+    "href": "eda.html",
+    "title": "Penguins EDA",
+    "section": "",
+    "text": "Load libraries\n\n\nCode\nlibrary(palmerpenguins)\nlibrary(dplyr)\nlibrary(ggplot2)\n\n\n\n\nGet the data\n\n\nCode\n# Make a persistent DB and store the connection in a variable.\ncon &lt;- DBI::dbConnect(\n  duckdb::duckdb(),\n  dbdir = \"my-db.duckdb\"\n  )\n\n# Write an R dataframe (penguins) into a DuckDB table. \nDBI::dbWriteTable(conn = con,\n                  name = \"penguins\",\n                  value = palmerpenguins::penguins,\n                  overwrite = TRUE)\n\n\n\n\nData wrangling\n\n\nCode\nlibrary(dbplyr)\n\n# Query the data in the database.\ndf &lt;- dplyr::tbl(con, \"penguins\")\n\n# Summarise the data and extract (collect) the data as a dataframe.\ndf %&gt;%\n  group_by(species, sex) %&gt;%\n  summarise(\n    across(\n        ends_with(\"mm\") | ends_with(\"g\"),\n      \\(x) mean(x, na.rm = TRUE)\n      )\n    ) %&gt;%\n  dplyr::collect() %&gt;%\n  knitr::kable()\n\n\n\n\n\n\n\n\n\n\n\n\n\nspecies\nsex\nbill_length_mm\nbill_depth_mm\nflipper_length_mm\nbody_mass_g\n\n\n\n\nAdelie\nNA\n37.84000\n18.32000\n185.6000\n3540.000\n\n\nAdelie\nfemale\n37.25753\n17.62192\n187.7945\n3368.836\n\n\nAdelie\nmale\n40.39041\n19.07260\n192.4110\n4043.493\n\n\nChinstrap\nfemale\n46.57353\n17.58824\n191.7353\n3527.206\n\n\nChinstrap\nmale\n51.09412\n19.25294\n199.9118\n3938.971\n\n\nGentoo\nNA\n45.62500\n14.55000\n215.7500\n4587.500\n\n\nGentoo\nfemale\n45.56379\n14.23793\n212.7069\n4679.741\n\n\nGentoo\nmale\n49.47377\n15.71803\n221.5410\n5484.836\n\n\n\n\n\n\n\nVisualisation: Penguin Size vs Mass by Species\n\n\nCode\ndf %&gt;%\n  ggplot(aes(x = bill_length_mm, y = body_mass_g, color = species)) +\n  geom_point() + \n  geom_smooth(method = \"lm\")\n\n\n\n\n\n\n\n\n\n\n\nCode\n# Disconnect from the database.\nDBI::dbDisconnect(con, shutdown = TRUE)"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Penguin Predictor App",
+    "section": "",
+    "text": "This site shows the EDA of the palmerpenguins data."
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "Exploring the Palmer Penguins Data",
+    "section": "",
+    "text": "This site contains two pages of interest:\n\nEDA - to explore the palmerpenguins data.\nModel - to calculate statistical values after fitting a linear regression model on the data."
+  },
+  {
+    "objectID": "model.html",
+    "href": "model.html",
+    "title": "Model",
+    "section": "",
+    "text": "Load necessary libraries\n\n\nCode\nlibrary(palmerpenguins)\nlibrary(dplyr)\n\n\n\nAttaching package: 'dplyr'\n\n\nThe following objects are masked from 'package:stats':\n\n    filter, lag\n\n\nThe following objects are masked from 'package:base':\n\n    intersect, setdiff, setequal, union\n\n\nCode\nlibrary(tidyr)\n\n\n\n\nGet data\n\n\nCode\nlibrary(duckdb)\n\n\nLoading required package: DBI\n\n\nCode\nlibrary(dbplyr)\n\n\n\nAttaching package: 'dbplyr'\n\n\nThe following objects are masked from 'package:dplyr':\n\n    ident, sql\n\n\nCode\n# Make a persistent DB and store the connection in a variable.\ncon &lt;- DBI::dbConnect(\n  duckdb::duckdb(),\n  dbdir = \"my-db.duckdb\"\n  )\n\n# Write an R dataframe (penguins) into a DuckDB table. \nDBI::dbWriteTable(conn = con,\n                  name = \"penguins\",\n                  value = palmerpenguins::penguins,\n                  overwrite = TRUE)\n\n# Query the data in the database.\ndf &lt;- dplyr::tbl(con, \"penguins\") %&gt;% dplyr::collect()\n\n# Disconnect from the database.\nDBI::dbDisconnect(con, shutdown = TRUE)\n\n\n\n\nDefine model and fit\n\n\nCode\nX &lt;- df %&gt;% \n  select(bill_length_mm, species, sex)\n\ny &lt;- df$body_mass_g\n\nmodel &lt;- lm(y ~ ., data = X)\n\n\n\n\nGet some information\n\n\nCode\ncat(paste(\"R^2:\", summary(model)$r.squared, \"\\n\"))\n\n\nR^2: 0.855536875953761 \n\n\nCode\ncat(paste(\"Intercept:\", coef(model)[1], \"\\n\"))\n\n\nIntercept: 2169.2697209394 \n\n\nCode\ncat(\"Columns:\", colnames(X), \"\\n\")\n\n\nColumns: bill_length_mm species sex \n\n\nCode\ncat(paste(\"Coefficients:\", coef(model)[-1], \"\\n\"))\n\n\nCoefficients: 32.5368867712031 \n Coefficients: -298.765534465279 \n Coefficients: 1094.86739144898 \n Coefficients: 547.36692407721"
+  }
+]
