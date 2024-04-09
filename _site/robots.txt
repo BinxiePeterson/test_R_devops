@@ -1,0 +1,1 @@
+Sitemap: https://BinxiePeterson.github.io/test_R_devops/sitemap.xml

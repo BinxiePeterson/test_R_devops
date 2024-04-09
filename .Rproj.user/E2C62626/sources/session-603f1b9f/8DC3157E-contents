@@ -2,3 +2,5 @@
 eda_files/
 model_files
 renv/
+/.quarto/
+.Rproj.user/*
